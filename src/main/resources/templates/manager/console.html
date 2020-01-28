@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+<!--    <link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}" media="all">-->
+<!--    <link rel="stylesheet" th:href="@{/layuiadmin/style/admin.css}" media="all">-->
+    <script src="/static/js/resource.js"></script>
+    <style type="text/css">
+        #Scheduled{
+            border-radius: 10px;
+            width: 400px;
+        }
+        #Scheduled>ul{
+            overflow: auto;
+            max-height: 300px;
+            padding-left: 40px;
+        }
+        #Scheduled>ul>li{
+            list-style-type:none;
+            margin-top: 10px;
+        }
+        .dh {
+            margin-top: 5%;
+            margin-left: 22%;
+            width: 180px;
+            height: 180px;
+            line-height: 180px;
+            text-align: center;
+            background-color: #009688;
+            cursor: pointer;
+            color: #fff;
+            border-radius: 50%;
+        }
+    </style>
+
+</head>
+<body>
+
+<!--<div class="layui-fluid">-->
+<!--    <div title="欢迎使用" style="padding:20px;overflow:hidden;">-->
+<!--        <p style="font-size: 25px; line-height: 30px; height: 30px;">222欢迎使用后台理系统</p>-->
+<!--        <p>开发人员：zero</p>-->
+
+<!--        <hr />-->
+<!--        <h2>系统环境</h2>-->
+<!--        <p>系统环境：Windows</p>-->
+<!--        <p>开发工具：IDEA</p>-->
+<!--        <p>Java版本：JDK 1.8</p>-->
+<!--        <p>服务器：tomcat 7.0</p>-->
+<!--        <p>数据库：MySQL 5.7</p>-->
+<!--        <p>系统采用技术： springboot + mybatis + maven</p>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+<!--    <span class="layui-breadcrumb" style="visibility: visible;">-->
+<!--          <a href="/">首页</a><span lay-separator=""></span>-->
+<!--        </span>-->
+    <div class="lunbo">
+        <div class="layui-carousel" id="test1">
+            <div carousel-item>
+                <!--<div>img</div>
+                <div>条目2</div>-->
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div id="chat" style="float:left;width: 300px;border: 1px solid #ccc;background: #F56C6C">
+            <input id="text" type="text" /><button id="send">Send</button>    <button id="close" οnclick="closeWebSocket()">Close</button>
+            <p>chatting room-在线聊天室</p>
+            <div id="message">
+            </div>
+        </div>
+        <div class="dh fl">
+            <div>
+                <div class="layui-anim layui-anim-rotate layui-anim-loop" data-anim="layui-anim-rotate layui-anim-loop">每天都有好心情</div>
+            </div>
+        </div>
+        <div id="Scheduled" style="float: right;border: 2px solid #ccc;padding: 1px;background: #cf9236">
+            <p style="margin-left: 20px;">websocket消息推送</p>
+            <ul class="ull" >
+            </ul>
+        </div>
+    </div>
+
+
+
+
+
+
+
+<!--<script th:src="@{/layuiadmin/layui/layui.js(t=1)}"></script>-->
+    <script>
+
+        $.ajax({
+            url: "/carousel/queryCarouselList",
+            type: "GET",
+            data:"",
+            dataType: "json",
+            success: function(data){
+                var list = data.rows;
+                var html = "";
+                for (var i = 0; i < list.length; i++) {
+                    if (list[i].status == 1 && list[i].deleted == 0) {
+                        html+='<div><img src="'+list[i].carousel+'"></div>'
+                    }
+                }
+                $("#test1").children().html(html);
+            },
+            error:function(d){
+                console.log(d);
+            }
+        });
+
+        setTimeout(function () {
+            layui.use('carousel', function(){
+                var carousel = layui.carousel;
+                //建造实例
+                carousel.render({
+                    elem: '#test1'
+                    ,width: '100%' //设置容器宽度
+                    ,arrow: 'always' //始终显示箭头
+                    //,anim: 'updown' //切换动画方式
+                    ,interval:2000  //轮播切换时间
+                });
+            });
+        },100)
+
+        var websocket = null;
+
+        //判断当前浏览器是否支持WebSocket
+        if('WebSocket' in window){
+            websocket = new WebSocket("ws://localhost:8080/websocket");
+        }
+        else{
+            alert('Not support websocket');
+        }
+
+        //连接发生错误的回调方法
+        websocket.onerror = function(){
+            setMessageInnerHTML("error");
+        };
+
+        //连接成功建立的回调方法
+        websocket.onopen = function(event){
+            setMessageInnerHTML("open");
+        };
+
+        //接收到消息的回调方法
+        websocket.onmessage = function(){
+            setMessageInnerHTML(event.data);
+        };
+
+        //连接关闭的回调方法
+        websocket.onclose = function(){
+            setMessageInnerHTML("close");
+        };
+
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function(){
+            websocket.close();
+        };
+
+        //将消息显示在网页上
+        function setMessageInnerHTML(innerHTML){
+            var ifFlag = null;
+            ifFlag = innerHTML.split(",")[1];
+            if(ifFlag==null||ifFlag==""){
+                // 用户输入的聊天记录
+                document.getElementById('message').innerHTML += innerHTML + '<br/>';
+            }else{
+                getScheduled(innerHTML)
+                console.log("定时任务推送结果----------------")
+            }
+
+        }
+
+        //关闭连接
+        function closeWebSocket(){
+            console.log("closeWebSocket----websocket已关闭链接");
+            websocket.close();
+        }
+
+        $("#send").on("click",function(){
+            send();
+        })
+        $("#close").on("click",function(){
+            closeWebSocket();
+        })
+
+        //发送消息
+        function send(){
+            console.log("send: websocket已链接");
+            var message = document.getElementById('text').value;
+            websocket.send(message);
+        }
+
+        function getScheduled(innerHTML) {
+            var result = JSON.parse(innerHTML.split("|")[0]);
+            var li = '<li><span>'+result.nickName+'***用户购买了</span><span>'+result.wallet+'元商品</span></li>';
+            $("#Scheduled ul").append(li)
+        }
+
+    </script>
+</body>
+</html>

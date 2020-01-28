@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/js/resource.js"></script>
+    <style>
+        .btn_width{
+            width:160px;
+        }
+    </style>
+</head>
+<body>
+
+    <div  style="margin-left: 10%;padding-top: 20px;">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名：</label>
+                <div class="layui-input-block">
+                    <input type="text"  lay-verify="required" autocomplete="off" name="title" id="name" required="" lay-verify="required"  autocomplete="off"  class="layui-input btn_width">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">年龄：</label>
+                <div class="layui-input-block">
+                    <input type="number" max="150" oninput="value=value.replace(/[^\d]/g,'')" name="title" id="age" required="" lay-verify="required" placeholder="年龄" autocomplete="off" class="layui-input btn_width">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">性别：</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="gender" value="1" title="男" checked>
+                    <input type="radio" name="gender" value="0" title="女">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">密码：</label>
+                <div class="layui-input-block">
+                    <input type="text"  name="title" id="password" required="" lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input btn_width">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户昵称：</label>
+                <div class="layui-input-block">
+                    <input type="text"  name="title" id="nickName" required="" lay-verify="required"  autocomplete="off" class="layui-input btn_width">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户金额：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" id="wallet" required="" lay-verify="required" placeholder="用户金额" autocomplete="off" class="layui-input btn_width">
+                </div>
+            </div>
+         </form>
+    </div>
+
+    <script type="text/javascript">
+
+        layui.use(['form','layer'], function(){
+            var form = layui.form;
+            var layer = layui.layer;
+            form.render();
+            //监听提交
+            /*form.on('submit(formDemo)', function(data){
+                layer.msg(JSON.stringify(data.field));
+                return false;
+            });*/
+        });
+
+
+
+        function ApplicationSave(){
+            var name = $("#name").val();
+            var age = $("#age").val();
+            var gender = $('input[name="gender"]:checked').val(); //获取单选框 的值
+            var password = $("#password").val();
+            var nickName = $("#nickName").val();
+            var wallet = $("#wallet").val();
+            if (name == null || name == "") {
+                alert("用户不能为空");
+                return false;
+            }
+            if (age == null || name == "") {
+                alert("年龄不能为空");
+                return false;
+            }
+            if (gender == null || gender == "") {
+                alert("性别不能为空");
+                return false;
+            }
+            if (password == null || password == "") {
+                alert("密码不能为空");
+                return false;
+            }
+            if (nickName == null || nickName == "") {
+                alert("用户昵称不能为空");
+                return false;
+            }
+            if (wallet == null || wallet == "") {
+                alert("用户金额不能为空");
+                return false;
+            }
+            $.ajax({
+                async:false,
+                url : "/user/addUser",
+                type : 'POST',
+                data:{"name":name,"age":age,"gender":gender,"password":password,"nickName":nickName,"wallet":wallet},
+                dataType : 'json',
+                success : function(data) {
+                    parent.layer.alert(data.data);
+                    config.closeWin('userListTable'); //关闭当前页面，同时刷新当前表单 参数为该表单的id
+                }
+            });
+        }
+        function verify(value, msg) {
+            if (value == null || value == "") {
+                alert(msg);
+                return false;
+            }
+        }
+
+    </script>
+
+</body>
+</html>

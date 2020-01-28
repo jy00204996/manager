@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+
+
+    <form class="layui-form">
+        <div class="layui-input-inline" style="width: 200px;margin-top: 8px">
+            <input type="text" id="userCode" name="userCode" placeholder="用户名" autocomplete="off" class="layui-input"/>
+        </div>
+
+        <div class="layui-input-inline" style="margin-top: 8px">
+            <button class="layui-btn" lay-submit lay-filter="formSearch" id="formSearch">搜索</button>
+            <button type="button" class="layui-btn layui-btn-primary" onclick="restData();">重置</button>
+        </div>
+    </form>
+
+
+
+    <script type="text/javascript">
+
+        // bootstrap表格添加按钮 绑定事件
+        function operateFormatter () {
+            var operateHtml = "";
+            operateHtml+='<button class="layui-btn layui-btn-sm layui-btn-danger" id="offoron" >停止</button>';
+            return operateHtml;
+        };
+
+        window.operateEvents = {
+            'click #offoron': function (e, value, row, index) {
+                alert(111)
+            }
+        };
+
+        config.initTable1("#personlist","/xxx/bbb",[ //表头
+                {checkbox: true, fixed: 'left',type:"checkbox"}
+                ,{field: 'status', title: '状态',
+                    formatter:function (value,row) {
+                        if(value==0){
+                            return "关";
+                        }else if(value==1){
+                            return "开";
+                        }
+                    }
+                }
+                ,{ title: '操作',events: operateEvents,formatter:operateFormatter}
+            ],"",$("#exportName").text()
+            ,{}
+        );
+
+        // bootstrapTable 在第二页删除数据后渲染页面，必须要回到第一页
+        config.tableQuery("oneList",{page:1})
+
+
+        // layui-form表单提交
+        layui.use(['form', 'table', 'layer', 'laydate'], function () {
+            var form = layui.form;
+            form.on('submit(formSearch)', function (data) {
+                config.tableQuery("personlist",data.field);
+                return false;
+            });
+        });
+
+    </script>
+
+
+</body>
+</html>

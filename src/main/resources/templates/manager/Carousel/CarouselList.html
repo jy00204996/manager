@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/js/resource.js"></script>
+</head>
+<body>
+
+    <button type="button" style="margin-left: 10px;margin-top: 10px;" id="addPic" class="layui-btn layui-btn-sm fl" >添加图片</button>
+
+    <table id="picTable"></table>
+
+    <img src="">
+<script type="text/javascript">
+
+    config.initTable1("#picTable","/carousel/queryCarouselList",[
+            {
+                field: 'id',
+                title: 'ID',
+                cellStyle:{
+                    css:{"vertical-align": "middle"},
+                },
+            },{
+
+                field: 'name',
+                title: '图片名称',
+                cellStyle:{
+                    css:{"vertical-align": "middle"},
+                },
+            }, {
+
+                field: 'carousel',
+                title: '轮播图',
+                formatter: function (a,b) {
+                    console.log(b.carousel)
+                    return '<img style="width: 200px;height: 30px;" src="'+b.carousel+'">'
+                },
+                cellStyle:{
+                    css:{"vertical-align": "middle"},
+                },
+            }, {
+
+                field: 'carouselLogo',
+                title: '轮播logo',
+                formatter: function (a,b) {
+                    console.log(b.carouselLogo)
+                    return '<img style="width: 200px;height: 30px;" src="'+b.carouselLogo+'">'
+                },
+                cellStyle:{
+                    css:{"vertical-align": "middle"},
+                },
+            },{
+                field: 'createTime',
+                title: '创建时间',
+                formatter: function (e) {
+                    return config.toDateString(e);
+                },
+                cellStyle:{
+                    css:{"vertical-align": "middle"},  //自定义该列样式
+                },
+            },{
+
+                field: 'updateTime',
+                title: '最后编辑时间',
+                formatter: function (e) {
+                    return config.toDateString(e);
+                },
+                cellStyle:{
+                    css:{"vertical-align": "middle"},  //自定义该列样式
+                },
+            },{
+                field: 'status',
+                title: '状态',
+                formatter: function (a,row,c) {
+                    var html = "";
+                    if (a == 1) {
+                        html+="<button class=\"layui-btn layui-btn-sm layui-btn-danger\" onclick=changePic('"+a+"',"+JSON.stringify(row)+")>关闭</button>";
+                        return html;
+                    }else {
+                        html+="<button class=\"layui-btn layui-btn-sm layui-btn-normal\" onclick=changePic('"+a+"',"+JSON.stringify(row)+")>开启</button>";
+                        return html;
+                    }
+                },
+                cellStyle:{
+                    css:{"vertical-align": "middle","text-align":"center"},
+                },
+            },{
+                title : '操作',
+                field : '',
+                align : 'center',
+                width:150,
+                cellStyle:{
+                    css:{"vertical-align":"middle"}
+                },
+                events: window.operateEvents,
+                //操作栏的格式化,value代表当前单元格中的值，row代表当前行数据，index表示当前行的下标
+                formatter : function(value, row, index) {
+                    // console.log("value",value)
+                    // console.log("row",JSON.stringify(row))
+                    // console.log("index",index)
+                    var id = index;
+                    var result = "";
+                    // result += "<a href='javascript:;' class='btn btn-xs green' onclick=viewRow('"+id+"',"+JSON.stringify(row)+",'"+value+"') title='查看'><span class='glyphicon glyphicon-search'></span></a>";
+                    // result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"EditViewById('" + JSON.stringify(row) + "','" + id + "')\" title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                    // result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"EditViewById('" + row.project_name + "', '" + row.case_num + "','" + id + "')\" title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                    result += "<a href='javascript:;' class='btn btn-xs blue' onclick=edit('"+id+"',"+JSON.stringify(row)+") title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                    result += "<a href='javascript:;' class='btn btn-xs red' onclick=delPic(" + JSON.stringify(row) + ") title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+                    return result;
+                }
+            }
+        ],"","用户列表",
+        {});
+
+
+    $("#addPic").on("click",function () {
+        layui.use('layer', function(){
+            var layer = layui.layer;
+            // console.log("父弹框",window.json)
+            config.openPageLayer("添加","Carousel/addCarousel.html",['500px','400px'],function () {
+            },$("#picTable"),false);
+        });
+    })
+
+
+    function edit(index,rows) {
+        layui.use('layer', function(e){
+            var layer = layui.layer;
+            window.json = rows;//把当前数据赋值给window对象，这样弹出层的子页面就能获取到父弹框传过来的数据
+            // console.log("父弹框",window.json)
+            config.openPageLayer("编辑","Carousel/editCarousel.html",['500px','400px'],function () {
+            },$("#picTable"),false);
+        });
+    }
+
+    function changePic(a,b) {
+        $.ajax({
+            url: "/carousel/changeCarousel",
+            type: "POST",
+            data:{"id":b.id,"status":b.status},
+            dataType: "json",
+            success: function(data){
+                layui.use("layer",function(){
+                    var layer = layui.layer;
+                    layer.open({
+                        title: "提示",
+                        content: data.data
+                    });
+                })
+                $("#picTable").bootstrapTable("refresh","{silent: true}");
+            },
+            error:function(d){
+                console.log(d);
+            }
+        });
+    }
+
+    function delPic(e) {
+        $.ajax({
+            url: "/carousel/delCarousel",
+            type: "POST",
+            data:{"id":e.id},
+            dataType: "json",
+            success: function(data){
+                layui.use("layer",function(){
+                    var layer = layui.layer;
+                    layer.open({
+                        title: "提示",
+                        content: data.data
+                    });
+                })
+                $("#picTable").bootstrapTable("refresh","{silent: true}");
+            },
+            error:function(d){
+                console.log(d);
+            }
+        });
+
+    }
+
+
+
+</script>
+
+</body>
+</html>

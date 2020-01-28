@@ -1,0 +1,20 @@
+
+
+
+.clearfix:after{ content:''; display:block;clear:both; height:0;}
+.fl{
+    float: left;
+}
+.fr{
+    float: right;
+}
+.alert_top{
+    margin-top: 0px!important;
+}
+/*.layui-input-block{*/
+/*    margin-left: 80px;*/
+/*}*/
+.layui-form-label{
+    width: 126px;
+}
+.btn_width{}

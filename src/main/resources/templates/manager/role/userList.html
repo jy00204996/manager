@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/js/resource.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="clearfix">
+        <!--<div class="fl" style="height: 30px;line-height: 32px;margin-right: 10px;">
+            用户名:
+        </div>
+        <input id="srhValue" class="layui-input fl" type="text" style="width: 130px;height: 30px;">
+        <button class="layui-btn layui-btn-sm fl" style="margin-left: 10px;">开始时间</button>
+        <input id="startTime" class="layui-input fl" type="text" style="width: auto;height: 30px;margin-left: 10px;">
+        <button class="layui-btn layui-btn-sm fl" style="margin-left: 10px;">结束时间</button>
+        <input id="endTime" class="layui-input fl" type="text" style="width: auto;height: 30px;margin-left: 10px;">
+        <button type="button" id="search" class="layui-btn layui-btn-sm fl" lay-submit lay-filter="formSearch" style="margin-left: 10px;">查询</button>
+        <button type="button" id="reset" class="layui-btn layui-btn-sm fl" style="margin-left: 10px;">重置</button>-->
+
+        <form class="layui-form" method="post">
+            <div class="layui-input-inline" style="width: 160px;margin-top: 8px">
+                <input type="text" id="userCode" name="name" placeholder="用户姓名" class="layui-input">
+            </div>
+
+            <div class="layui-input-inline" style="width: 150px;margin-top: 8px">
+                <input type="text" class="layui-input" id="startTime" placeholder="开始时间" name="startTime" readonly="readonly"/>
+            </div>
+
+            <div class="layui-input-inline" style="width: 150px;margin-top: 8px">
+                <input type="text" class="layui-input" id="endTime" placeholder="结束时间" name="endTime" readonly="readonly"/>
+            </div>
+            <div class="layui-input-inline" style="width: 150px;margin-top: 8px">
+                <select id="deleted" name="deleted">
+                    <option value="">请选择</option>
+                    <option value="1">已删除用户</option>
+                    <option value="0">未删除用户</option>
+                </select>
+            </div>
+
+            <div class="layui-input-inline" style="margin-top:8px">
+                <button class="layui-btn" lay-submit lay-filter="formSearch" id="search">搜索</button>
+                <button type="button" class="layui-btn layui-btn-primary" onclick="restData()">重置</button>
+            </div>
+        </form>
+    </div>
+    <button type="button" style="margin-left: 0px;margin-top: 10px;" id="addUser" class="layui-btn layui-btn-sm fl" >添加用户</button>
+    <!--    <div id="toolbar">-->
+    <!--        <select class="form-control">-->
+    <!--            <option value="">Export Basic</option>-->
+    <!--            <option value="all">Export All</option>-->
+    <!--            <option value="selected">Export Selected</option>-->
+    <!--        </select>-->
+    <!--    </div>-->
+    <table id="userListTable" data-show-export="true"></table>
+
+</div>
+
+<script type="text/javascript">
+
+    // 此模块多表查询
+
+    //重新渲染表单函数
+    function renderForm() {
+        layui.use('form', function() {
+            var form = layui.form; //高版本建议把括号去掉，有的低版本，需要加()
+            form.render();
+        });
+    }
+
+    //重置按钮
+    function restData() {
+        $("#userCode").val("");
+        $("#startTime").val("");
+        // $("#endtTime").val(currentDate);
+        $("#deleted").val("")
+        renderForm();
+        $("#search").click();
+    }
+
+    var currentDate = config.formatDate('yyyy-MM-dd');
+    layui.use(['form', 'table', 'layer', 'laydate'], function () {
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+
+        //layui表单form提交
+        form.on('submit(formSearch)', function (data) {
+            //console.log(data)  //layui的form表单提交，form数据都在data.field里面，在单个搜索的时候，要把当前页设为1
+            data.field.page=1;
+            config.tableQuery("userListTable",data.field); //tableQuery二参就是我们要提交给接口的数据，可以自定义
+            return false;
+        });
+
+        laydate.render({
+            elem: '#startTime',
+            type: 'date',
+            istime: true,       //是否开启时间选择
+            isclear: true,      //是否显示清空
+            istoday: true,      //是否显示今天
+            issure: true,       //是否显示确认
+            festival: true,     //是否显示节日
+            min: '1900-01-01',
+            // max: currentDate,
+            format: 'yyyy-MM-dd',
+            // value: currentDate, //初始化时间框，值为当前时间
+            done: function (value, date, endDate) {
+                var startDate = new Date($('#startTime').val()).getTime();
+                var endTime = new Date(value).getTime();
+                if (endTime < startDate) {
+                    $('#startTime').val(currentDate);
+                    $('#endTime').val(currentDate);
+                }
+            }
+        });
+
+        laydate.render({
+            elem: '#endTime',
+            type: 'date',
+            istime: true,       //是否开启时间选择
+            isclear: true,      //是否显示清空
+            istoday: true,      //是否显示今天
+            issure: true,       //是否显示确认
+            festival: true,     //是否显示节日
+            min: '1900-01-01',
+            // max: currentDate,
+            format: 'yyyy-MM-dd',
+            // value: currentDate,
+            done: function (value, date, endDate) {
+                var startDate = new Date($('#startTime').val()).getTime();
+                var endTime = new Date(value).getTime();
+                if (endTime < startDate) {
+                    layer.alert("结束时间不能小于开始时间");
+                    // $('#startTime').val(currentDate);
+                    $('#endTime').val("");
+                }
+            }
+        });
+    });
+
+
+
+
+
+
+
+
+
+    //操作栏的格式化
+    function gender(value,row,index) {
+        // console.log("row",row)
+        if (row.gender == 1) {
+            return "男";
+        }else{
+            return "女";
+        }
+    }
+
+    $("#addUser").on("click",function () {
+        layui.use('layer', function(){
+            var layer = layui.layer;
+            // console.log("父弹框",window.json)
+            config.openPageLayer("添加","role/addUser.html",['500px','400px'],function () {
+            },$("#userListTable"),false);
+        });
+    })
+
+    window.operateEvents = {
+        'click #delete': function (e, value, row, index) {
+            layer.confirm('确定要删除么？', function(index){
+                $.ajax({
+                    url: "/user/deleteUser",
+                    type: "POST",
+                    data:{id:row.id},
+                    dataType: "json",
+                    success: function(data){
+                        layer.open({
+                            title: "提示",
+                            content: data.data
+                        });
+                        $("#userListTable").bootstrapTable("refresh","{silent: true}");
+                    },
+                    error:function(d){
+                        console.log(d);
+                    }
+                });
+            });
+        },
+        'click #recover': function (e, value, row, index) {
+            layer.confirm('确定要恢复么？', function(index){
+                $.ajax({
+                    url: "/user/recover",
+                    type: "POST",
+                    data:{id:row.id,deleted:1},
+                    dataType: "json",
+                    success: function(data){
+                        layer.open({
+                            title: "提示",
+                            content: data.data
+                        });
+                        $("#userListTable").bootstrapTable("refresh","{silent: true}");
+                    },
+                    error:function(d){
+                        console.log(d);
+                    }
+                });
+            });
+        },
+        'click #edit': function (e, value, rows, index) {
+            layui.use('layer', function(){
+                var layer = layui.layer;
+                window.json = rows;//把当前数据赋值给window对象，这样弹出层的子页面就能获取到父弹框传过来的数据
+                // console.log("父弹框",window.json)
+                config.openPageLayer("编辑","role/editUser.html",['500px','400px'],function () {
+                },$("#userListTable"),false);
+            });
+        }
+    };
+
+    config.initTable1("#userListTable","/user/queryUserList",[
+            {
+                field: 'id',
+                title: 'ID',
+                cellStyle:{
+                    css:{"vertical-align": "middle"},
+                },
+            }, {
+
+                field: 'name',
+                title: '用户名',
+                cellStyle:{
+                    css:{"vertical-align": "middle"},
+                },
+            }, {
+
+                field: 'age',
+                title: '年龄',
+                cellStyle:{
+                    css:{"vertical-align": "middle"},
+                },
+            },{
+
+                field: 'gender',
+                title: '性别',
+                formatter: gender, //写一个方法格式化该列数据
+                cellStyle:{
+                    css:{"vertical-align": "middle"},  //自定义该列样式
+                },
+            },{
+
+                field: 'nickName',
+                title: '用户昵称',
+                cellStyle:{
+                    css:{"vertical-align": "middle"},  //自定义该列样式
+                },
+            },{
+
+                field: 'createTime',
+                title: '创建时间',
+                formatter: function (e) {
+                    return config.toDateString(e);
+                },
+                cellStyle:{
+                    css:{"vertical-align": "middle"},  //自定义该列样式
+                },
+            },
+            {
+                field: 'wallet',
+                title: '钱包金额',
+                cellStyle:{
+                    css:{"vertical-align": "middle"},
+                },
+            },{
+
+                field: 'deleted',
+                title: '状态',
+                formatter:function(e){
+                    if(e==1){
+                        return "关闭"
+                    }else {
+                        return "开启"
+                    }
+                },
+                cellStyle:{
+                    css:{"vertical-align": "middle"},  //自定义该列样式
+                },
+            },
+            {
+                title : '操作',
+                field : '',
+                align : 'center',
+                width:150,
+                cellStyle:{
+                    css:{"vertical-align":"middle"}
+                },
+                events: window.operateEvents,
+                //操作栏的格式化,value代表当前单元格中的值，row代表当前行数据，index表示当前行的下标
+                formatter : function(value, row, index) {
+                    // console.log("value",value)
+                    // console.log("row",JSON.stringify(row))
+                    // console.log("index",index)
+                    var id = index;
+                    var result = "";
+                    result += "<a href='javascript:;' class='btn btn-xs green' onclick=viewRow('"+id+"',"+JSON.stringify(row)+",'"+value+"') title='查看'><span class='glyphicon glyphicon-search'></span></a>";
+                    // result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"EditViewById('" + JSON.stringify(row) + "','" + id + "')\" title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                    // result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"EditViewById('" + row.project_name + "', '" + row.case_num + "','" + id + "')\" title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                    result += "<a href='javascript:;' class='btn btn-xs blue' id='edit' onclick=edit('"+id+"',"+JSON.stringify(row)+") title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                    if (row.deleted == 1) {
+                        result += "<a href='javascript:;' class='btn btn-xs red' id='recover' onclick=reset(" + JSON.stringify(row) + ") title='恢复该用户'><span class='glyphicon glyphicon-repeat'></span></a>";
+                    }else{
+                        result += "<a href='javascript:;' class='btn btn-xs red' id='delete' onclick=DeleteByIds(" + JSON.stringify(row) + ") title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+                    }
+                    return result;
+                }
+            }
+        ],"","用户列表",
+        {});
+
+
+
+
+
+
+
+    /*function DeleteByIds(row) {
+        /!*config.openPageLayer("编辑","sysUser/editRole",['500px','400px'],function () {
+        },$("#personlist"),false);*!/
+        layui.use('layer', function(){
+            var layer = layui.layer;
+            layer.confirm('确定要删除么？', function(index){
+                $.ajax({
+                    url: "/user/deleteUser",
+                    type: "POST",
+                    data:{id:row.id},
+                    dataType: "json",
+                    success: function(data){
+                        layer.open({
+                            title: "提示",
+                            content: data.data
+                        });
+                        $("#userListTable").bootstrapTable("refresh","{silent: true}");
+                    },
+                    error:function(d){
+                        console.log(d);
+                    }
+                });
+            });
+        });
+    }*/
+
+    /*function edit(index,rows){
+        // console.log(index);
+        // console.log(rows);
+        layui.use('layer', function(){
+            var layer = layui.layer;
+            window.json = rows;//把当前数据赋值给window对象，这样弹出层的子页面就能获取到父弹框传过来的数据
+            // console.log("父弹框",window.json)
+            config.openPageLayer("编辑","editUser.html",['500px','400px'],function () {
+            },$("#userListTable"),false);
+        });
+    }*/
+
+
+
+
+
+
+
+</script>
+</body>
+</html>

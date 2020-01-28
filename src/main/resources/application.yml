@@ -1,0 +1,38 @@
+spring:
+  thymeleaf:
+    cache: false
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/manager_system?useUnicode=true&amp&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: root
+    password: root
+
+  mvc:
+    view:
+      prefix: /
+      suffix: .html
+  resources: #允许访问的静态资源，我们静态资源放在了templates跟static下面
+    static-locations: classpath:/templates/,classpath:/static/
+
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.zero.system.entity
+
+
+#这个是我们图片存放到服务器或者windows的物理路径
+ACTPATH: D:/upload/img
+#这个是访问路径(我们用来存在数据库的， 访问时用)，图片存放到服务器的物理路径后，我们访问这个访问路径就能访问到图片了
+#比如linux的ip是10.112.14.90， 我们访问10.112.14.90/upload/img/xxx.jpg就能访问图片了
+#在页面回显该图片时 这样写<img src="baseUrl+url">  baseUrl是linux的ip地址(10.112.14.90)  url是该图片访问路径(/upload/img/xxx.jpg)
+#把访问路径跟物理路径映射起来，linux要在nginx上配置，Windows则要在项目里配置MvcConfig
+URLACTPATH: /upload/img
+BASEURL: xxx.xxx.xxx.xxx #这个是配置服务器的域名
+
+#配置 在控制台打印sql语句, level后面要指向对应的mapper全路径.表示打印mapper里被执行的sql
+logging:
+  level:
+    com.zero.system.mapper: debug
+
+
+

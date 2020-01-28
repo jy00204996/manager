@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/js/resource.js"></script>
+    <style>
+        .btn_width{
+            width:160px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="alert_top" style="margin-left: 10%">
+
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">年龄：</label>
+                <div class="layui-input-block">
+                    <input type="number" max="150" oninput="value=value.replace(/[^\d]/g,'')" name="title" id="age" required="" lay-verify="required" placeholder="年龄" autocomplete="off" class="layui-input btn_width">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">性别：</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="gender" value="1" title="男">
+                    <input type="radio" name="gender" value="0" title="女">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">密码：</label>
+                <div class="layui-input-block">
+                    <input type="text"  name="title" id="password" required="" lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input btn_width">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户昵称：</label>
+                <div class="layui-input-block">
+                    <input type="text"  name="title" id="nickName" required="" lay-verify="required"  autocomplete="off" class="layui-input btn_width">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">钱包金额：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" id="wallet" required="" lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input btn_width">
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+<script>
+
+    layui.use(['form','layer'], function(){
+        var form = layui.form;
+        var layer = layui.layer;
+        form.render();
+    });
+
+    //回显单选框
+    var checkedRadio = function (e,num) {
+        $("input[name="+e+"][value=1]").attr("checked", num == 1 ? true : false);
+        $("input[name="+e+"][value=0]").attr("checked", num == 0 ? true : false);
+    };
+
+    // console.log("子弹框",parent.json)//获取父弹框传过来的数据,首先得在父级赋值 window.json=xxx
+    var baba = parent.json;
+    $("#age").val(baba.age);
+    $("#password").val(baba.password);
+    $("#wallet").val(baba.wallet);
+    $("#nickName").val(baba.nickName);
+    checkedRadio("gender",baba.gender);
+
+
+
+    function ApplicationSave() {
+        var data={"id":baba.id,"age":$("#age").val(),"gender":$('input[name="gender"]:checked').val(),"password":$("#password").val(),"wallet":$("#wallet").val(),"nickName":$("#nickName").val()}
+        $.ajax({
+            async:false,
+            url : "/user/updateUser",
+            type : 'POST',
+            data:data,
+            dataType : 'json',
+            data :data,
+            success : function(data) {
+                parent.layer.alert(data.message);
+                config.closeWin('userListTable'); //关闭当前页面，同时刷新当前表单 参数为该表单的id
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

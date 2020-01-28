@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/js/resource.js"></script>
+    <style>
+        .btn_width{
+            width:160px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="alert_top layui-form" style="margin-left: 10%" >
+        <div class="layui-form-item">
+            <label class="layui-form-label">图片名称：</label>
+            <div class="layui-input-block">
+                <input type="text"  style="width: 286px;height: 30px;" autocomplete="off" name="title" id="name" required="" lay-verify="required"  autocomplete="off"  class="layui-input btn_width">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label act_left">轮播图：</label>
+            <div class="layui-input-block act_rgt">
+                <p class="layui-btn layui-btn-sm fl" id="upAct">上传文件</p>
+                <input type="file" id="carousel" style="display: none">
+                <input type="text" id="actUrl" class="layui-input btn_width fl" style="width: 210px;height: 30px;margin-left: 10px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label act_left">轮播图logo：</label>
+            <div class="layui-input-block act_rgt">
+                <p class="layui-btn layui-btn-sm fl" id="upAct1">上传文件</p>
+                <input type="file" id="carouselLogo" style="display: none">
+                <input type="text" id="actUrl1" class="layui-input btn_width fl" style="width: 210px;height: 30px;margin-left: 10px;">
+            </div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+
+        $("#upAct").on("click",function () {
+            $("#carousel").click()
+        })
+        $("#carousel").on("change",function () {
+            $("#actUrl").val($(this).val())
+        })
+
+        $("#upAct1").on("click",function () {
+            $("#carouselLogo").click()
+        })
+        $("#carouselLogo").on("change",function () {
+            $("#actUrl1").val($(this).val())
+        })
+
+
+        var xhrOnProgress=function(fun) {
+            xhrOnProgress.onprogress = fun; //绑定监听
+            //使用闭包实现监听绑
+            return function() {
+                //通过$.ajaxSettings.xhr();获得XMLHttpRequest对象
+                var xhr = $.ajaxSettings.xhr();
+                //判断监听函数是否为函数
+                if (typeof xhrOnProgress.onprogress !== 'function')
+                    return xhr;
+                //如果有监听函数并且xhr对象支持绑定时就把监听函数绑定上去
+                if (xhrOnProgress.onprogress && xhr.upload) {
+                    xhr.upload.onprogress = xhrOnProgress.onprogress;
+                }
+                return xhr;
+            }
+        }
+
+
+
+        function ApplicationSave(){
+            var formFile = new FormData();
+            var name = $("#name").val();
+            var carousel = document.getElementById("carousel").files[0]; // js 获取文件对象
+            var carouselLogo = document.getElementById("carouselLogo").files[0]; // js 获取文件对象
+            var filePath = $("#carousel").val().toLowerCase().split(".");
+            var fileType = filePath[filePath.length-1] //获取文件结尾的类型
+            if (name == null || name == "") {
+                alert("用户不能为空");
+                return false;
+            }
+            formFile.append("name", name);
+
+            if (carousel != undefined) {
+                formFile.append("carousel", carousel);
+                if (carousel.size > 1048576) {
+                    alert('错误！活动封面图请上传不超过1M的文件');
+                    return false;
+                }
+            }
+            if (carouselLogo != undefined) {
+                formFile.append("carouselLogo", carouselLogo);
+                if (carousel.size > 1048576) {
+                    alert('错误！活动封面图请上传不超过1M的文件');
+                    return false;
+                }
+            }
+
+            /*if (fileObj == null || fileObj == "") {
+                alert("请上传图片")
+                return false;
+            }
+            if(!(fileType == "png" || fileType == "jpg" || fileType == "xlsx"|| fileType == "docx"|| fileType == "rar" || fileType == "zip" )){
+                alert('文件格式不符合要求！');
+                return false;
+            }
+            if(fileObj.size>1048576){
+                alert('错误！请上传不超过1M的文件');
+                return false;
+            }*/
+            $.ajax({
+                async:false,
+                url : "/carousel/addCarousel",
+                type : 'POST',
+                data:formFile,
+                dataType : 'json',
+                cache: false,//上传文件无需缓存
+                processData: false,//用于对data参数进行序列化处理 这里必须false
+                contentType: false, //必须
+                success : function(data) {
+                    parent.layer.alert(data.data);
+                    config.closeWin('picTable'); //关闭当前页面，同时刷新当前表单 参数为该表单的id
+                }
+            });
+        }
+
+
+
+
+
+
+
+        /*多文件上传:
+            js:
+                var formFile = new FormData();
+        var fileObj1 = document.getElementById("FileUpload1").files[0]; // js 获取文件对象
+        var fileObj2 = document.getElementById("FileUpload2").files[0]; // js 获取文件对象
+        Serviceimpl:
+            public Result updateActivity(MultipartFile[] file, ActivityVO activityVO){
+            Activity activity = new Activity();
+            String url = IMGPATH+"/activity/";
+            String vir = VIRPATH+"/activity/";
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd ");
+            try{
+                String filename1 = file[0].getOriginalFilename();
+                String suffix1 = filename1.substring(filename1.lastIndexOf(".") + 1);
+                String filename2 = file[1].getOriginalFilename();
+                String suffix2 = filename2.substring(filename2.lastIndexOf(".") + 1);
+                File folder = new File(url);
+                if (!folder.exists() && !folder.isDirectory()) {
+                    folder.mkdirs();
+                }
+                String path1= "sm"+DateUtil.getNowTimeStr() + "." + suffix1;
+                String path2= DateUtil.getNowTimeStr() + "." + suffix2;
+                file[0].transferTo(new File(url +path1));
+                file[1].transferTo(new File(url +path2));
+                activity.setId(activityVO.getId());
+                activity.setImgUrl(vir+path1);
+                activity.setActivityImgUrl(vir+path2);
+                activity.setTitle(activityVO.getTitle());
+
+                activity.setStartTime(sdf.parse(activityVO.getStartTime()));
+                activity.setEndTime(sdf.parse(activityVO.getEndTime()));
+                activity.setUpdateTime(new Date());
+                activity.setContent(activityVO.getContent());
+                activity.setUpdateTime(new Date());
+                activityMapper.updateById(activity);
+                return new Result(1,"修改成功","");
+            }catch (Exception e){
+                return new Result(1,"修改失败","");
+            }
+        }*/
+
+
+
+
+
+
+
+    </script>
+
+</body>
+</html>

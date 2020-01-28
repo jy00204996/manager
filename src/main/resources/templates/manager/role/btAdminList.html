@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/js/resource.js"></script>
+</head>
+<body>
+
+
+    <div class="container">
+        <div class="clearfix">
+            <div class="fl" style="height: 30px;line-height: 32px;margin-right: 10px;">
+                管理员:
+            </div>
+            <input id="srhValue" class="layui-input fl" type="text" style="width: 130px;height: 30px;">
+            <button type="button" id="search" class="layui-btn layui-btn-sm fl" style="margin-left: 10px;">查询</button>
+            <button type="button" id="reset" class="layui-btn layui-btn-sm fl" style="margin-left: 10px;">重置</button>
+        </div>
+        <button type="button" style="margin-left: 10px;margin-top: 10px;" id="addAdmin" class="layui-btn layui-btn-sm fl">添加管理员</button>
+        <table id="adminTable"></table>
+
+    </div>
+
+
+
+    <script type="text/javascript">
+        //此模块单表查询
+
+
+
+        config.initTable1("#adminTable","/user/queryAdminList",[
+                {
+                    field: 'adminCode',
+                    title: '管理员名称',
+                    cellStyle:{
+                        css:{"vertical-align": "middle"},
+                    },
+                },{
+
+                    field: 'nickName',
+                    title: '管理员昵称',
+                    cellStyle:{
+                        css:{"vertical-align": "middle"},  //自定义该列样式
+                    },
+                },{
+
+                    field: 'mark',
+                    title: '管理员备注',
+                    cellStyle:{
+                        css:{"vertical-align": "middle"},  //自定义该列样式
+                    },
+                },{
+
+                    field: 'createTime',
+                    title: '创建时间',
+                    formatter: function (e) {
+                        return config.toDateString(e);
+                    },
+                    cellStyle:{
+                        css:{"vertical-align": "middle"},  //自定义该列样式
+                    },
+                },{
+                    field: 'status',
+                    title: '状态',
+                    formatter:function(value, row, index){
+                        var operateHtml= "";
+                        if(row.status==1){
+                            operateHtml+='<button style="margin-left:33%;" onclick=changeAdmin('+JSON.stringify(row)+') class="layui-btn layui-btn-sm layui-btn-danger" id="offoron">关</button>';
+                        }else if(row.status==0){
+                            operateHtml+='<button style="margin-left:33%;"  onclick=changeAdmin('+JSON.stringify(row)+') class="layui-btn layui-btn-sm" id="offoron">开</button>';
+                        }
+                        return operateHtml;
+                    },
+                    cellStyle:{
+                        css:{"vertical-align": "middle"},  //自定义该列样式
+                    }
+                },
+                {
+                    title : '操作',
+                    field : '',
+                    align : 'center',
+                    width:150,
+                    cellStyle:{
+                        css:{"vertical-align":"middle"}
+                    },
+                    events: window.operateEvents,
+                    //操作栏的格式化,value代表当前单元格中的值，row代表当前行数据，index表示当前行的下标
+                    formatter : function(value, row, index) {
+                        // console.log("value",value)
+                        // console.log("row",JSON.stringify(row))
+                        // console.log("index",index)
+                        var id = index;
+                        var result = "";
+                        // result += "<a href='javascript:;' class='btn btn-xs green' onclick=viewRow('"+id+"',"+JSON.stringify(row)+",'"+value+"') title='查看'><span class='glyphicon glyphicon-search'></span></a>";
+                        // result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"EditViewById('" + JSON.stringify(row) + "','" + id + "')\" title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                        // result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"EditViewById('" + row.project_name + "', '" + row.case_num + "','" + id + "')\" title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                        result += "<a href='javascript:;' class='btn btn-xs blue' onclick=edit('"+id+"',"+JSON.stringify(row)+") title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                        result += "<a href='javascript:;' class='btn btn-xs red' onclick=DeleteByIds(" + JSON.stringify(row) + ") title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+                        return result;
+                    }
+                }
+            ],"","管理员列表",
+            {});
+
+        //单个用户查询见实现类里逻辑，一定要在查整张表的时候加一个条件筛选，用来我们对单个用户的查询
+        $("#search").on("click",function () {
+            var name = $("#srhValue").val();
+            // console.log(name)
+            var page = 1 //查询单个的时候，当前页设为第一页
+            config.tableQuery("adminTable",{adminCode:name,page:page});
+            /*$.ajax({
+                url: "/demo/admin/queryAdmin",
+                type: "POST",
+                data:{adminCode:name},
+                dataType: "json",
+                success: function(data){
+
+                },
+                error:function(d){
+                    console.log(d);
+                }
+            });*/
+        })
+        $("#reset").on("click",function () {
+            $("#srhValue").val("");
+            $("#search").click();
+        })
+
+
+        $("#addAdmin").on("click",function () {
+            layui.use('layer', function(){
+                var layer = layui.layer;
+                // console.log("父弹框",window.json)
+                config.openPageLayer("添加","role/addBtAdmin.html",['500px','400px'],function () {
+                },$("#adminTable"),false);
+            });
+        })
+
+        function edit(index,rows){
+            layui.use('layer', function(){
+                var layer = layui.layer;
+                window.json = rows;//把当前数据赋值给window对象，这样弹出层的子页面就能获取到父弹框传过来的数据
+                config.openPageLayer("编辑","role/editBtAdmin.html",['500px','400px'],function () {
+                },$("#adminTable"),false);
+            });
+        }
+
+        function changeAdmin(row) {
+            layui.use('layer', function(){
+                var layer = layui.layer;
+                $.ajax({
+                    url: "/user/changeAdmin",
+                    type: "POST",
+                    data:{id:row.id,status:row.status},
+                    dataType: "json",
+                    success: function(data){
+                        layer.open({
+                            title: "提示",
+                            content: data.data
+                        });
+                        $("#adminTable").bootstrapTable("refresh","{silent: true}");
+                    },
+                    error:function(d){
+                        console.log(d);
+                    }
+                });
+            });
+        }
+
+        function DeleteByIds(row) {
+            layui.use('layer', function(){
+                var layer = layui.layer;
+                layer.confirm('确定要删除么？', function(index){
+                    $.ajax({
+                        url: "/user/btDelAdmin",
+                        type: "POST",
+                        data:{id:row.id},
+                        dataType: "json",
+                        success: function(data){
+                            layer.open({
+                                title: "提示",
+                                content: data.data
+                            });
+                            $("#adminTable").bootstrapTable("refresh","{silent: true}");
+                        },
+                        error:function(d){
+                            console.log(d);
+                        }
+                    });
+                });
+            });
+        }
+
+    </script>
+
+
+
+</body>
+</html>

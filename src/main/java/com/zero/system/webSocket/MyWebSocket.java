@@ -121,7 +121,7 @@ public class MyWebSocket {
             System.out.println("===============act: "+act);
             UserService UserService = act.getBean(UserService.class);
             User userResultBean = UserService.queryUser(id.toString());
-            System.err.println("************查询第" + id + "个用户****************");
+//            System.err.println("************查询第" + id + "个用户****************");
             String s = JSONObject.toJSONString(userResultBean);
             String result = s+"|data";
             this.session.getBasicRemote().sendText(result);

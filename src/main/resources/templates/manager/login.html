@@ -46,13 +46,9 @@
                     dataType:'json',
                     type:'post',
                     success:function (data) {
-                        if (data.success){
+                        if (data.status == 0) {
                             layer.msg(data.message,{time:700},function() {
                                 window.location.href = "/manager/index";
-                            })
-                        }else{
-                            layer.msg(data.message,{time:700},function() {
-
                             })
                         }
                     }

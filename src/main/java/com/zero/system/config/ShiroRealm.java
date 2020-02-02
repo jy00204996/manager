@@ -31,10 +31,11 @@ public class ShiroRealm extends AuthorizingRealm {
         if (adminEntity == null) {
             throw new UnknownAccountException("用户不存在!");
         }
+        String salt = "woshiyan";
         // 靠用户名从数据库查询该用户的全部信息
         // 传入:用户名,加密后的密码,盐值,该realm的名字，加密算法和加密次数在已经在配置文件中指定
 //        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(username, adminEntity.getPassword(),ByteSource.Util.bytes(username), getName());
-        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(username, adminEntity.getPassword(), getName());
+        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(username, adminEntity.getPassword(),ByteSource.Util.bytes(salt), getName());
         return info;
     }
 

@@ -15,6 +15,7 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -23,7 +24,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +57,18 @@ public class DispatherController {
     @GetMapping("/login")
     public String login(){
         return "manager/login";
+    }
+
+    @RequestMapping("/getNickName")
+    @ResponseBody
+    public Map<String, Object> getNickName() {
+        Map<String, Object> map = new HashMap<>();
+        Subject currentUser = SecurityUtils.getSubject();
+        //获取登录用户名
+        Object principal = currentUser.getPrincipal();
+        String.valueOf(principal);
+        map.put("nickname", principal);
+        return map;
     }
 
     /**
@@ -128,10 +143,21 @@ public class DispatherController {
      * @return
      */
     @GetMapping("/logout")
-    public String logout(HttpSession session){
-        session.invalidate();
-        return "manager/login";
+    @ResponseBody
+    public Map<String, Object> logout(HttpSession session, HttpServletResponse response) throws IOException {
+//        session.invalidate();
+        Map<String, Object> map = new HashMap<>();
+        SecurityUtils.getSubject().logout();
+//        response.sendRedirect("/manager/login");
+        try {
+            map.put("status", 1);
+        } catch (Exception e) {
+            log.error("登出失败");
+            map.put("status", 0);
+        }
+        return map;
     }
+
 
     /**
      * 跳转修改密码页面

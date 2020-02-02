@@ -37,14 +37,14 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/layuiadmin/**", "anon");
         filterChainDefinitionMap.put("/mystatic/**", "anon");
         filterChainDefinitionMap.put("/manager/login","anon");
+//        filterChainDefinitionMap.put("/manager/logout","logout");
 
         //设置拦截请求后跳转的URL.
         shiroFilter.setLoginUrl("/manager/login");
         // 登录成功后要跳转的链接
         shiroFilter.setSuccessUrl("/manager/index");
-
+//        filterChainDefinitionMap.put("/logout", "logout");
         filterChainDefinitionMap.put("/**", "authc");
-
         /*// 设置login URL
 
 

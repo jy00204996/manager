@@ -61,6 +61,7 @@
 <script src="/static/layuiadmin/layui/layui.js"></script>
 <script>
 
+
     layui.config({
         base: '/layuiadmin/' //静态资源所在路径
     }).extend({
@@ -90,6 +91,17 @@
                     element.init();
                 }
             })
+
+            $.ajax({
+                url:'/manager/getNickName',
+                dataType:'json',
+                type:'get',
+                success:function(data){
+                    $("#nickName").text(data.nickname);
+                }
+            })
+
+
         })
 
         //组装子菜单的方法
@@ -137,6 +149,21 @@
             t.parent().next().toggle();
         })
     },500)
+
+    // logout
+
+    $("#logout").on("click",function () {
+         $.ajax({
+            url:'/manager/logout',
+            dataType:'json',
+            type:'get',
+            success:function(data){
+                if (data.status == 1) {
+                    window.location.href = "/manager/login";
+                }
+            }
+        })
+    })
 
 
 </script>

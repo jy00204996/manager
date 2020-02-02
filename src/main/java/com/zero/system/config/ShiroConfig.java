@@ -29,19 +29,22 @@ public class ShiroConfig {
 //        Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
         Map<String,String> filterChainDefinitionMap = new LinkedHashMap<String,String>(16);
 
-        //authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问,先配置anon再配置authc。
+        //authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问,先配置anon再配置authc。authc放最后面
+
         //静态资源的处理
         filterChainDefinitionMap.put("/js/**", "anon");
         filterChainDefinitionMap.put("/css/**", "anon");
-        filterChainDefinitionMap.put("/fonts/**", "anon");
-        filterChainDefinitionMap.put("/images/**", "anon");
-        filterChainDefinitionMap.put("/login","anon");
-        filterChainDefinitionMap.put("/manager/treeMenu","anon");
-        filterChainDefinitionMap.put("/**", "authc");
+        filterChainDefinitionMap.put("/layuiadmin/**", "anon");
+        filterChainDefinitionMap.put("/mystatic/**", "anon");
+        filterChainDefinitionMap.put("/manager/login","anon");
+
         //设置拦截请求后跳转的URL.
         shiroFilter.setLoginUrl("/manager/login");
         // 登录成功后要跳转的链接
         shiroFilter.setSuccessUrl("/manager/index");
+
+        filterChainDefinitionMap.put("/**", "authc");
+
         /*// 设置login URL
 
 

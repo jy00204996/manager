@@ -1,15 +1,10 @@
 package com.zero.system.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zero.system.entity.Admin;
-import com.zero.system.entity.AdminEntity;
 import com.zero.system.entity.TreeMenu;
-import com.zero.system.mapper.AdminEntityMapper;
 import com.zero.system.service.TreeMenuService;
 import com.zero.system.util.AjaxResult;
 import com.zero.system.util.Const;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -36,8 +31,6 @@ public class ManagerController {
     private AjaxResult ajaxResult;
     @Autowired
     private TreeMenuService treeMenuService;
-    @Autowired
-    private AdminEntityMapper adminEntityMapper;
 
     /**
      * 跳转到用户列表页
@@ -84,16 +77,11 @@ public class ManagerController {
     @PostMapping("/treeMenu")
     @ResponseBody
     public Object treeMenu(HttpSession session){
-        QueryWrapper<AdminEntity> adminEntityQueryWrapper = new QueryWrapper<>();
         if(!StringUtils.isEmpty(session.getAttribute(Const.TREEMENU))){
             return session.getAttribute(Const.TREEMENU);
         }
         Admin admin = (Admin) session.getAttribute(Const.ADMIN);
-        //获取登陆用户名
-        Object username = SecurityUtils.getSubject().getPrincipal();
-        adminEntityQueryWrapper.select("id").eq("username", username);
-        AdminEntity adminEntity = adminEntityMapper.selectOne(adminEntityQueryWrapper);
-        List<TreeMenu> treeMenuList = treeMenuService.selectByAdminId(adminEntity.getId());
+        List<TreeMenu> treeMenuList = treeMenuService.selectByAdminId(admin.getId());
         session.setAttribute(Const.TREEMENU,treeMenuList);
         return treeMenuList;
     }

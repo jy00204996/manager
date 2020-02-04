@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,7 +60,7 @@ public class DispatherController {
         return "manager/login";
     }
 
-    @RequestMapping("/getNickName")
+    /*@RequestMapping("/getNickName")
     @ResponseBody
     public Map<String, Object> getNickName() {
         Map<String, Object> map = new HashMap<>();
@@ -69,17 +70,17 @@ public class DispatherController {
         String.valueOf(principal);
         map.put("nickname", principal);
         return map;
-    }
+    }*/
 
     /**
      * 表单提交登录
      *
-     * @param adminEntity
+     * @param session
      * @return
      */
     @PostMapping("/login")
     @ResponseBody
-    public Map<String, Object> doLogin(AdminEntity adminEntity) {
+    /*public Map<String, Object> doLogin(AdminEntity adminEntity) {
         Map<String, Object> map = new HashMap<>();
 
         // 把用户名和密码封装为 UsernamePasswordToken 对象
@@ -105,8 +106,8 @@ public class DispatherController {
             map.put("message", "状态不正常");
         }
         return map;
-    }
-    /*public AjaxResult doLogin(Admin admin, HttpSession session){
+    }*/
+    public AjaxResult doLogin(Admin admin, HttpSession session){
         if(StringUtils.isEmpty(admin.getUsername())){
             ajaxResult.ajaxFalse("用户名不能为空");
             return ajaxResult;
@@ -135,7 +136,7 @@ public class DispatherController {
             ajaxResult.ajaxFalse("系统错误,请刷新");
         }
         return ajaxResult;
-    }*/
+    }
 
     /**
      * 登出
@@ -143,6 +144,11 @@ public class DispatherController {
      * @return
      */
     @GetMapping("/logout")
+    public String logout(HttpSession session){
+        session.invalidate();
+        return "manager/login";
+    }
+    /*@GetMapping("/logout")
     @ResponseBody
     public Map<String, Object> logout(HttpSession session, HttpServletResponse response) throws IOException {
 //        session.invalidate();
@@ -156,7 +162,7 @@ public class DispatherController {
             map.put("status", 0);
         }
         return map;
-    }
+    }*/
 
 
     /**
@@ -188,7 +194,8 @@ public class DispatherController {
             ajaxResult.ajaxFalse("密码不一致");
             return ajaxResult;
         }
-        admin.setPassword(newpassword);
+        String md5Password = DigestUtils.md5DigestAsHex(newpassword.getBytes());
+        admin.setPassword(md5Password);
         int count = adminService.editByAdmin(admin);
         if(count >= 1){
             ajaxResult.ajaxTrue("修改密码成功");

@@ -31,7 +31,14 @@
             return operateHtml;
         };
 
-        //创建dev
+        // 输入框只能输入正整数包含0
+        // <input type="number" oninput="value=value.replace(/[^\d]/g,'')" >
+            // 输入框只能输入正整数不包含0
+            // <input type="number" oninput="value=value.replace(/^(0+)|[^\d]+/g,'')" >
+            // 只能输入纯汉字
+        // onkeyup="value=value.replace(/[^\u4E00-\u9FA5]/g,'')"
+        // 保留2位小数 非负数
+        // oninput="this.value=this.value.match(/\d+(\.\d{0,2})?/)?this.value.match(/\d+(\.\d{0,2})?/)[0]:''"
 
 
 

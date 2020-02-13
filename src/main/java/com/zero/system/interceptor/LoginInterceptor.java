@@ -1,6 +1,7 @@
 package com.zero.system.interceptor;
 
 import com.zero.system.util.Const;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
  * @Date 2019/7/17 13:51
  * @Created by WDD
  */
+//@Component
 public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

@@ -3,6 +3,7 @@ package com.zero.system.controller;
 import com.zero.system.entity.BtAdmin;
 import com.zero.system.entity.User;
 import com.zero.system.service.UserService;
+import com.zero.system.util.RedisUtil;
 import com.zero.system.util.ResultBean;
 import com.zero.system.vo.AdminVO;
 import com.zero.system.vo.ResultPlus;
@@ -17,6 +18,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RedisUtil redisUtil;
 
     @RequestMapping("queryUserList")
     public ResultPlus queryUserList(UserVo userVo) {

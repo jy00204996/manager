@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zero.system.mapper.UserMapper">
+
+    <select id="queryUserList" resultType="com.zero.system.vo.UserVo">
+        select t.* from t_user t where 1=1
+        <if test="userVo.name != null and userVo.name != ''">
+            and t.name = #{userVo.name}
+        </if>
+        <if test="userVo.deleted != null and userVo.deleted != ''">
+            and t.deleted = #{userVo.name}
+        </if>
+        order by t.create_time desc
+    </select>
+
+
+<!--    N张主从表查询
+    SELECT  rg.group_name,rg.room,rg.group_type,rg.admin_id,rg.create_time,rg.kill_rate,rg.shut_up,rg.status,count(g.user_id)num from
+    red_group rg left join red_group_users g on rg.id = g.group_id left join red_user u on g.user_id = u.id
+    where rg.deleted = 0 and g.deleted = 0 and u.deleted = 0 and u.user_type = 1 GROUP BY g.group_id;-->
+
+<!--    判断时间重叠-->
+    <select id="test">
+        <if test="activity.startTime !=null and activity.startTime !=''"> <!-- 有开始时间-->
+            <if test=" activity.endTime != null and activity.endTime != ''"> <!-- 开始时间结束时间都有的情况 ， 1、活动开始在这区间 2、活动的结束时间在这区间 (注：由于长期活动只有开始时间所以包含在内)-->
+                <![CDATA[ and (
+            (date_format( #{activity.startTime}, '%Y-%m-%d') BETWEEN date_format( k.start_time, '%Y-%m-%d') and k.end_time and k.is_permanent <> 1) or
+            (date_format( #{activity.endTime}, '%Y-%m-%d') BETWEEN date_format( k.start_time, '%Y-%m-%d') AND k.end_time and k.is_permanent <>1) or
+            (date_format( k.start_time, '%Y-%m-%d') >= date_format( #{activity.startTime}, '%Y-%m-%d') and  date_format(k.end_time, '%Y-%m-%d') <= date_format( #{activity.endTime}, '%Y-%m-%d') and k.is_permanent <>1) or
+            (#{activity.endTime}>= k.start_time  and k.is_permanent =1)
+            ) ]]>
+            </if>
+            <if test=" activity.endTime == null or activity.endTime == ''">  <!-- 有开始时间，无结束时间 1、活动的结束时间大于等于传入的开始时间 2.长期有效的活动-->
+                <![CDATA[and ((#{activity.startTime} BETWEEN k.start_time and k.end_time) or  (#{activity.startTime}>= k.start_time and k.is_permanent =1))]]>
+            </if>
+        </if>
+
+        <if test="activity.startTime == null or activity.startTime == ''"> <!-- 无开始时间 -->
+            <if test="activity.endTime !=null and activity.endTime !=''"> <!-- 有结束时间 只需要活动的结束时间大于等于传入的结束时间或者长期有效活动-->
+                <![CDATA[ and ((#{activity.endTime} between k.start_time and k.end_time and k.is_permanent <>1 ) or (#{activity.endTime}>= k.start_time  and k.is_permanent =1)) ]]>
+            </if>
+        </if>
+
+        ORDER BY
+        k.update_time DESC
+    </select>
+
+
+
+</mapper>

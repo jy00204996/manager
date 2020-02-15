@@ -29,7 +29,7 @@ public class TimeTask {
     private int i=1;
 
 //    private static Logger logger = LoggerFactory.getLogger(TimeTask.class);
-    @Scheduled(cron = "0/5 * * * * ? ") // 间隔5秒执行一次
+//    @Scheduled(cron = "0/5 * * * * ? ") // 间隔5秒执行一次
     public void test(){
         System.err.println("*********   定时任务执行  间隔5秒执行一次,从数据库里获取数据 **************");
         CopyOnWriteArraySet<MyWebSocket> webSocketSet = MyWebSocket.getWebSocketSet();

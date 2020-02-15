@@ -25,8 +25,13 @@ public class MvcConfig implements WebMvcConfigurer {
     private String virPath;
 
     @Bean
-    public LogInterceptor setBean(){
+    public LogInterceptor LogInterceptor(){
         return new LogInterceptor(); // 注入spring
+    }
+
+    @Bean
+    public LoginInterceptor loginInterceptor(){
+        return new LoginInterceptor(); // 注入spring  不然redisUtil工具类在拦截器会报null
     }
 
     @Override
@@ -38,9 +43,11 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/manager/**")
-                .excludePathPatterns("/static/**","/","/manager/login");
-        registry.addInterceptor(setBean()).addPathPatterns("/manager/**")
-                .excludePathPatterns("/static/**","/","/manager/login");
-    }
+        /*registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/manager/**")
+                .excludePathPatterns("/static/**","/","/manager/login");*/
+        registry.addInterceptor(loginInterceptor()).addPathPatterns("/manager/**")
+                .excludePathPatterns("/static/**","/","/manager/login","/manager/logout");;
+        registry.addInterceptor(LogInterceptor()).addPathPatterns("/manager/**")
+                .excludePathPatterns("/static/**","/","/manager/login","/manager/logout");
+}
 }

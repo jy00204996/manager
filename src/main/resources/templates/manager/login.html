@@ -36,6 +36,12 @@
     <script th:src="@{/mystatic/particles/js/app.js}"></script>
 
     <script>
+
+        //单一登陆 用户被踢出时，解决网页嵌套问题
+        if (self.location !== top.location) {
+            top.location = self.location;
+        }
+
         layui.use(['form','layer','jquery'], function(){
             var form = layui.form;
             var $ = layui.jquery;

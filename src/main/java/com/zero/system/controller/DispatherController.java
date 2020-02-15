@@ -7,6 +7,7 @@ import com.zero.system.service.AdminService;
 import com.zero.system.service.RoleService;
 import com.zero.system.util.AjaxResult;
 import com.zero.system.util.Const;
+import com.zero.system.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -25,12 +26,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @Classname DispatherController
@@ -50,6 +53,10 @@ public class DispatherController {
     private AdminService adminService;
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private RedisUtil redisUtil;
+
 
     /**
      * 跳转登录界面
@@ -107,7 +114,7 @@ public class DispatherController {
         }
         return map;
     }*/
-    public AjaxResult doLogin(Admin admin, HttpSession session){
+    public AjaxResult doLogin(Admin admin, HttpSession session,HttpServletResponse response){
         if(StringUtils.isEmpty(admin.getUsername())){
             ajaxResult.ajaxFalse("用户名不能为空");
             return ajaxResult;
@@ -124,6 +131,15 @@ public class DispatherController {
             }else{
                 session.setAttribute(Const.ADMIN,ad);
                 ajaxResult.ajaxTrue("登录成功");
+                String str = "UID";
+                String uid = str+ad.getId().toString();
+                String token = UUID.randomUUID().toString();
+                Cookie cookieToken = new Cookie("token",token);
+                Cookie cookieUid = new Cookie("userId",uid);
+                redisUtil.set(uid,token,3600);
+                //下发token跟userId到浏览器
+                response.addCookie(cookieToken);
+                response.addCookie(cookieUid);
 
                 //获取角色列表，存入session
                 if(session.getAttribute(Const.ROLE) == null){

@@ -13,6 +13,16 @@
         order by t.create_time desc
     </select>
 
+<!--    查首冲
+    select r.user_id,amount,r.create_time from red_fund_in_out r
+    LEFT JOIN (SELECT rio.user_id id,min(rio.create_time) create_time FROM red_fund_in_out rio GROUP BY rio.user_id) k
+    on r.user_id=k.id
+    WHERE
+    r.create_time=k.create_time
+    GROUP BY r.user_id-->
+
+<!--    查二充
+    select t.user_id,t.create_time,t.amount from red_fund_in_out t where t.user_id = '1212214581523996674' order by t.create_time limit 1 offset 1-->
 
 <!--    N张主从表查询
     SELECT  rg.group_name,rg.room,rg.group_type,rg.admin_id,rg.create_time,rg.kill_rate,rg.shut_up,rg.status,count(g.user_id)num from

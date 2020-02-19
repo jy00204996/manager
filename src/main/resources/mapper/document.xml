@@ -55,6 +55,19 @@
         k.update_time DESC
     </select>
 
+<!--    <if test="account.status !=null and account.status !=''">
+        <choose>
+            <when test='account.status.contains(",")'>
+                and r.status in
+                <foreach item="item" index="index" collection="account.status.split(',')" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                and r.status =  #{account.status}
+            </otherwise>
+        </choose>
+    </if>-->
 
 
 </mapper>

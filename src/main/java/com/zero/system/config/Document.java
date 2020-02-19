@@ -46,6 +46,28 @@ public class Document {
         return code;
     }*/
 
+    /*//工具类里调用mapper或者redis
+    @Component
+    public class OperationUtils {
+
+        @Resource
+        private AdminMapper amp;
+        @Resource
+        private UserMapper ump;
+        @Resource
+        private FundMapper fmp;
+
+        private static AdminMapper adminMapper;
+        private static UserMapper userMapper;
+        private static FundMapper fundMapper;
+
+        @PostConstruct
+        public void init() {
+            adminMapper = amp;
+            userMapper = ump;
+            fundMapper = fmp;
+        }
+    }*/
 
 
 }

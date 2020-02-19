@@ -28,4 +28,24 @@ public class Document {
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)*/
 
 
+ /*   //线程同步锁
+    private static boolean LOCK = true;
+
+    //为true才能执行该方法，保证线程安全
+    if(LOCK){
+        getCode(x,y,z)
+    }
+
+    //线程同步锁
+    @Transactional(propagation = Propagation.REQUIRED)
+    public synchronized Integer getCode(x,y,z) {
+        Integer code = 0;
+        LOCK = false;
+        //要执行的方法，审批转账业务流
+        LOCK = true;
+        return code;
+    }*/
+
+
+
 }

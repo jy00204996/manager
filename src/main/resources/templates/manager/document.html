@@ -31,6 +31,9 @@
             return operateHtml;
         };
 
+        //iframe获取父页面jQuery方法，如果是N层子页面，那就加N个parent.来调用父级
+        $("#iframe的id",parent.parent.document).html("显示的内容："+data.widthdrawCount);
+
 
         // bootstrap删除当前数据后，刷新表时，强行跳转到第一页
         $("#personlist").bootstrapTable("selectPage", 1);

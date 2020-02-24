@@ -70,4 +70,79 @@ public class Document {
     }*/
 
 
+
+
+
+    /*代理上下级查询逻辑: 必须查询用户A的所有下级数据
+
+    List<User> userList = userMapper.selectList(null); //查询用户表里所有用户数据，用来递归
+    List<User> childrenList = new ArrayList<>(); //用来储存A的所有下级用户
+    GetChildDataVO getChildDataVO = new GetChildDataVO(); //组装下级数据VO
+
+    getChildren(user.getId(), userList,childrenList);  //user.getId()表示用户A的id
+    packageChildren(childrenList,getChildDataVO);
+
+    查询用户A的所有下级代理数据:
+            1，先通过用户A的id把A的所有下级用户查询出来，需要使用递归
+
+
+    private void getChildren(String id, List<User> userList,List<User> childrenList) {
+        for (User user : userList) {
+            if (user.getSpreaderId().equals(id)) {
+                //当遍历的用户spreaderId等于传入id时，表面该用户为传入id的下级代理
+                childrenList.add(user);
+                getChildren(user.getId(),userList,childrenList);
+            }
+        }
+    }
+
+        2， 组装下级数据
+    private void packageChildren(List<User> u, GetChildDataVO getChildDataVO) {
+        if (u != null && u.size() > 0) {
+            //计算下级总人数
+            Integer count = 0;
+            String ids = null;
+            StringBuffer sb = new StringBuffer();
+            for (User user : u) {
+                if (user.getUserType() != NumberConstants.THREE) {
+                    count++;
+                    sb.append(user.getId()).append(",");
+                }
+            }
+            ids = sb.toString().substring(0, sb.length() - 1);
+            getChildDataVO.setCount(count);
+            //查询下级充值总额 把用户A的所有下级的ids放在sql里 用in做一次sum求和
+            getChildDataVO.setInTotal(fundMapper.selectInTotal(ids));
+            //查询下级提款总额
+            getChildDataVO.setOutTotal(fundMapper.selectOutTotal(ids));
+            //查询下级发包总额
+            getChildDataVO.setSendTotal(fundMapper.selectSend(ids));
+            //下级已提现佣金
+            getChildDataVO.setHisComm(fundMapper.selectHisComm(ids));
+            //下级未体现佣金
+            getChildDataVO.setCommission(fundMapper.selecCommission(ids));
+            //下级充值优惠总额
+            getChildDataVO.setPresent(fundInOutMapper.selectPresent(ids));
+        }else {
+            getChildDataVO.setCount(NumberConstants.ZERO);
+            getChildDataVO.setInTotal(BigDecimal.ZERO);
+            getChildDataVO.setOutTotal(BigDecimal.ZERO);
+            getChildDataVO.setSendTotal(BigDecimal.ZERO);
+            getChildDataVO.setHisComm(BigDecimal.ZERO);
+            getChildDataVO.setCommission(BigDecimal.ZERO);
+            getChildDataVO.setPresent(BigDecimal.ZERO);
+        }
+    }*/
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -136,6 +136,10 @@ public class Document {
 
 
 
+  /*  //docker启动命令
+    systemctl start docker 第一步启动docker
+    docker ps -a  //看下docker容器里的mysql等程序的id
+    docker start //程序id*/
 
 
 

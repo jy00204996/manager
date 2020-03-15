@@ -70,4 +70,61 @@
     </if>-->
 
 
+
+    <!--&#45;&#45; 首充
+    1236138972413652994  2020-03-10 10:12:52  11
+    1236138972413652994  2020-03-11 09:43:14  1000
+
+    select f.create_time,o.amount from red_fund_in_out o,(
+    select min(t.create_time)create_time from red_fund_in_out t where t.user_id = '1236912296454389761'
+    GROUP BY date_format(t.create_time, '%Y-%m-%d')
+    ) f  where f.create_time = o.create_time GROUP BY f.create_time
+
+    &#45;&#45; 二充
+    1236138972413652994  2020-03-10 10:25:32  10
+    1236138972413652994  2020-03-11 09:44:29  300
+    select m.create_time,k.amount from (
+    select min(o.create_time)create_time from red_fund_in_out o where o.user_id = '1236912296454389761' and o.create_time not in
+    (select min(t.create_time)create_time from red_fund_in_out t where t.user_id = '1236912296454389761' GROUP BY date_format(t.create_time, '%Y-%m-%d'))
+    GROUP BY date_format(o.create_time, '%Y-%m-%d')
+    ) m, red_fund_in_out k where m.create_time = k.create_time and k.user_id = '1236912296454389761' GROUP BY m.create_time
+-->
+
+
+    <!-- 用户首充-->
+    <select id="userFirstCharge" resultType="java.lang.Double">
+        select coalesce(sum(o.amount),0) from red_fund_in_out o,(
+        select min(t.create_time)create_time,t.user_id from red_fund_in_out t where t.user_id in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and t.fund_type in(1,3,5) and t.status = 6 and t.create_time between #{startTime} and #{endTime}
+        group by date_format(t.create_time, '%Y-%m-%d'),t.user_id
+        )f where f.create_time = o.create_time and o.user_id = f.user_id
+    </select>
+
+
+    <!-- 用户二充-->
+    <select id="userSecondCharge" resultType="java.lang.Double">
+        select coalesce(sum(k.amount),0) from (
+        select min(o.create_time)create_time,o.user_id from red_fund_in_out o where o.user_id in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and o.create_time not in(
+        select min(t.create_time)create_time from red_fund_in_out t where t.user_id in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and t.fund_type in(1,3,5) and t.status = 6 and t.create_time between #{startTime} and #{endTime}
+        group by date_format(t.create_time, '%Y-%m-%d'),t.user_id
+        )
+        and o.fund_type in(1,3,5) and o.status = 6 and o.create_time between #{startTime} and #{endTime}
+        group by date_format(o.create_time, '%Y-%m-%d'),o.user_id
+        )m, red_fund_in_out k where m.create_time = k.create_time and m.user_id=k.user_id
+    </select>
+
+
+
+
 </mapper>

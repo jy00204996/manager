@@ -28,6 +28,20 @@ public class Document {
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)*/
 
 
+/*    Synchronized与ReentrantLock区别总结：
+    性能的区别：
+
+    在Synchronized优化以前，synchronized的性能是比ReenTrantLock差很多的，但是自从Synchronized引入了偏向锁，轻量级锁（自旋锁）后，两者的性能就差不多了，在两种方法都可用的情况下，官方甚至建议使用synchronized，其实synchronized的优化我感觉就借鉴了ReenTrantLock中的CAS技术。都是试图在用户态就把加锁问题解决，避免进入内核态的线程阻塞。
+
+             
+
+    功能区别：
+
+    便利性：很明显Synchronized的使用比较方便简洁，并且由编译器去保证锁的加锁和释放，而ReenTrantLock需要手工声明来加锁和释放锁，为了避免忘记手工释放锁造成死锁，所以最好在finally中声明释放锁。
+
+    锁的细粒度和灵活度：很明显ReenTrantLock优于Synchronized*/
+
+
  /*   //线程同步锁
     private static boolean LOCK = true;
 

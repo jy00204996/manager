@@ -32,6 +32,17 @@ public class ManagerController {
     @Autowired
     private TreeMenuService treeMenuService;
 
+
+    /**
+     *
+     * @return
+     */
+    @GetMapping("/allot")
+    public String allot(){
+        return "manager/role/allotPer";
+    }
+
+
     /**
      * 跳转到用户列表页
      * @return

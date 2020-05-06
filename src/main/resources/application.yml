@@ -3,9 +3,9 @@ spring:
     cache: false
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/manager_system?useUnicode=true&amp&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    url: jdbc:mysql://144.34.191.78:3310/manager_system?useUnicode=true&amp&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: root
-    password: root
+    password: 123456
   mvc:
     view:
       prefix: /
@@ -14,8 +14,8 @@ spring:
     static-locations: classpath:/templates/,classpath:/static/
   redis:
     database: 0 # Redis数据库索引（默认为0）
-    host: 127.0.0.1 # Redis服务器地址
-    port: 6379 # Redis服务器连接端口
+    host: 144.34.191.78 # Redis服务器地址
+    port: 6382 # Redis服务器连接端口
     password:
     lettuce:
       pool:

@@ -37,7 +37,7 @@ public class CarouselServiceImpl implements CarouselService {
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public ResultBean addCarousel(CarouselVO carouselVO) {
         String actPath = ACTPATH+"/carousel/";  //物理路径
-        String urlPath = URLACTPATH+"/carousel/";  //访问路径
+        String urlPath = URLACTPATH;  //访问路径
         Carousel cl = new Carousel();
         MultipartFile carousel = carouselVO.getCarousel();
         if (carousel != null) {
@@ -61,7 +61,7 @@ public class CarouselServiceImpl implements CarouselService {
     @Override
     public ResultBean editCarousel(CarouselVO carouselVO) {
         String actPath = ACTPATH+"/carousel/";  //物理路径
-        String urlPath = URLACTPATH+"/carousel/";  //访问路径
+        String urlPath = URLACTPATH;  //访问路径
         Carousel cl = new Carousel();
         MultipartFile carousel = carouselVO.getCarousel();
         if (carousel != null) {

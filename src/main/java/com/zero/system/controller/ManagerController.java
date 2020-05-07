@@ -34,16 +34,6 @@ public class ManagerController {
 
 
     /**
-     * 跳转到角色设置界面
-     * @return
-     */
-    @GetMapping("/allot")
-    public String allot(){
-        return "manager/role/allotPer";
-    }
-
-
-    /**
      * 跳转到用户列表页
      * @return
      */

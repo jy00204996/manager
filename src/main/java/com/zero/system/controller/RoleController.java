@@ -138,9 +138,15 @@ public class RoleController {
         return ajaxResult;
     }
 
+    /**
+     * 跳转到角色设置界面
+     * @param id
+     * @param model
+     * @return
+     */
     @GetMapping("/allotPer")
     public String allotPer(Integer id,Model model){
         model.addAttribute("id",id);
-        return "/manager/role/allotPer";
+        return "manager/role/allotPer";
     }
 }

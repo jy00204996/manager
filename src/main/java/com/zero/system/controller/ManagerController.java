@@ -34,7 +34,7 @@ public class ManagerController {
 
 
     /**
-     *
+     * 跳转到角色设置界面
      * @return
      */
     @GetMapping("/allot")
